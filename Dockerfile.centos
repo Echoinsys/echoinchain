@@ -1,0 +1,20 @@
+# build docker image
+# > docker build -t blockservice/echoin:centos -f Dockerfile.centos .
+# initialize:
+# > docker run --rm -v $HOME/.echoin:/echoin blockservice/echoin:centos node init --home /echoin
+# node start:
+# > docker run --rm -v $HOME/.echoin:/echoin -p 26657:26657 -p 8545:8545 blockservice/echoin:centos node start --home /echoin
+FROM blockservice/echoin-build:centos
+
+
+# echoin
+WORKDIR /go/src/github.com/blockservice/echoin
+# copy echoin source code from local
+ADD . .
+
+RUN  make build && cp build/echoin /app/
+
+WORKDIR /app
+EXPOSE 8545 26656 26657
+
+ENTRYPOINT ["./echoin"]
